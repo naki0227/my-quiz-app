@@ -2,43 +2,43 @@ const allQuizData = {
     "第一回": [
         {
             question: "1）の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 12,
             answer: "エネルギー"
         },
         {
             question: "2）の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 13,
             answer: "アデノシン三リン酸(ATP)"
         },
         {
             question: "3）の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 14,
             answer: "ATP→ADP時にエネルギー発生"
         },
         {
             question: "4）の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 15,
             answer: "高エネルギーリン酸結合が<br>外れるときにエネルギーが発生"
         },
         {
             question: "7）,8)の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 17,
             answer: "7)食物など外からエネルギー<br>8)無機リン酸(Pi)"
         },
         {
             question: "9),10),11),12)の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 18,
             answer: "9)3つのエネルギー供給系<br>10)同時に使われている<br>11)代謝環境に応じて<br>12)相互作用しながら"
         },
         {
             question: "13）,14),15)の空所を補充してください",
-            pdfPath: "sportsphysiology.pdf",
+            pdfPath: "sportsPhysiology.pdf",
             pageNumber: 18,
             answer: "13)ATP再生機構(ATP-CP系)<br>14)無酸素的解糖系(乳酸系)<br>15)有酸素系(酸化系)"
         },
