@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一問一答アプリ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        // workerSrc を設定する。これはPDF.jsがPDFを解析するためにバックグラウンドで使うファイル
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>スポーツ生理学クイズ</h1>
+
+        <div id="quiz-selection-area">
+            <p>学習する回を選択してください：</p>
+            <select id="quiz-round-select">
+            </select>
+            <buttton id="start-quiz-button">クイズを開始</buttton>
+        </div>
+
+        <div id="quiz-area" class="hidden">
+            <canvas id="pdf-canvas" class="hidden"></canvas>
+            <p id="question">問題文が表示されます。</p>
+            <button id="show-answer-button">答えを見る。</button>
+            <p id="answer" class="hidden">答えが表示されます。</p>
+            <div id="feedback-buttons" class="hidden">
+                <button id="correct-button">正解</button>
+                <button id="incorrect-button">不正解</button>
+            </div>
+            <button id="next-question-button" class="hidden">次の問題へ</button>
+        </div>
+        <div id="result-area" class="hidden">
+            <h2>結果</h2>
+            <p>正解数:<span id="correct-count">0</span></p>
+            <p>不正解数:<span id="incorrect-count">0</span></p>
+            <button id="reset-button">もう一度</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
