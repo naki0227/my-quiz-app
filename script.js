@@ -327,6 +327,7 @@ let questions = [];
 let currentQuestionIndex = 0;
 let correctCount = 0;
 let incorrectCount = 0;
+let pdfRenderTask = null;
 
 const quizSelectionArea = document.getElementById('quiz-selection-area');
 const quizRoundSelect = document.getElementById('quiz-round-select');
@@ -350,7 +351,15 @@ const canvasContext = pdfCanvas.getContext('2d');
 
 //　PDFの読み込みと特定ページの描画を行う非同期関数
 async function displayPdfPage(pdfPath, pageNum) {
+    if (!pdfCanvas || canvasContext) {
+        console.error("PDFキャンバス要素が見つからないため、コンテキストが取得できません。");
+        return;
+    }
     try {
+        if (pdfRenderTask) {
+            await pdfRenderTask.cancel();
+            pdfRenderTask = null;
+        }
         // PDFドキュメントを読み込む
         const loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
@@ -371,16 +380,25 @@ async function displayPdfPage(pdfPath, pageNum) {
             canvasContext: canvasContext,
             viewport: viewport
         };
-        await page.render(renderContext).promise;
+        pdfRenderTask = page.render(renderContext);
+        await pdfRenderTask.promise;
+
+        pdfRenderTask = null;
 
         // PDFが表示されたらhiddenクラスを削除
         pdfCanvas.classList.remove('hidden');
     } catch (error) {
+        if (error.name === 'RenderingCancelledException') {
+            console.warn("前のPDF描画がキャンセルされました。");
+            return;
+        }
+
         console.error("PDFの読み込みまたは描画中にエラーが発生しました:", error);
         //　エラーが発生した場合、canvasを非表示にする
         pdfCanvas.classList.add('hidden');
         //　必要に応じて、ユーザーにエラーねっセージを表示するなどの処理
         alert("PDFの表示中にエラーが発生しました。コンソールを確認してください。");
+        pdfRenderTask = null;
     }
 }
 
