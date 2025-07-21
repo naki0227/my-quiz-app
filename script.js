@@ -161,7 +161,7 @@ const allQuizData = {
             answer: "12)右肺<br>13)左肺<br>14)細気管支"
         },
         {
-            question: "15),16),41)の空所を補充してください",
+            question: "15),16),17)の空所を補充してください",
             pdfPath: "sportsPhysiology.pdf",
             pageNumber: 44,
             answer: "15)細気管支<br>16)肺胞<br>17)胸膜"
