@@ -351,27 +351,42 @@ const canvasContext = pdfCanvas.getContext('2d');
 
 //　PDFの読み込みと特定ページの描画を行う非同期関数
 async function displayPdfPage(pdfPath, pageNum) {
-    if (!pdfCanvas || canvasContext) {
-        console.error("PDFキャンバス要素が見つからないため、コンテキストが取得できません。");
+    if (!pdfCanvas || !canvasContext) {
+        console.error("PDFキャンバス要素が見つからないか、コンテキストが取得できません。");
+        // PDF要素がない場合、必ず隠す
+        if (pdfCanvas) pdfCanvas.classList.add('hidden');
         return;
     }
-    try {
-        if (pdfRenderTask) {
-            await pdfRenderTask.cancel();
-            pdfRenderTask = null;
-        }
-        // PDFドキュメントを読み込む
-        const loadingTask = pdfjsLib.getDocument(pdfPath);
-        const pdf = await loadingTask.promise;
 
-        //　指定されたページを取得
+    try {
+        // ★既存の描画タスクがあればキャンセルする (強化版) ★
+        // cancel()がPromiseを返すのでawaitで完了を待つ
+        if (pdfRenderTask && pdfRenderTask.cancel) { // cancelメソッドが存在するかチェック
+            try {
+                await pdfRenderTask.cancel();
+                console.log("前のPDF描画タスクをキャンセルしました。");
+            } catch (cancelError) {
+                // キャンセルエラーは無視してOK (RenderingCancelledException)
+                if (cancelError.name !== 'RenderingCancelledException') {
+                    console.warn("PDF描画タスクのキャンセル中に予期せぬエラー:", cancelError);
+                }
+            } finally {
+                pdfRenderTask = null; // キャンセル試行後は必ずクリア
+            }
+        }
+
+        // PDFファイルの読み込み
+        const loadingTask = pdfjsLib.getDocument(pdfPath);
+        const pdf = await loadingTask.promise; // PDFドキュメントの読み込みを待つ
+
+        // 指定されたページを取得
         const page = await pdf.getPage(pageNum);
 
-        // ビューポート（表示領域）を設定。スケールは適宜調整
-        const scale = 0.5;  //　倍率
+        // ビューポート（表示領域）を設定。スケールは適宜調整してください
+        const scale = 0.5; // 倍率
         const viewport = page.getViewport({ scale: scale });
 
-        //　canvasのサイズをビューポートに合わせる
+        // canvasのサイズをビューポートに合わせる
         pdfCanvas.height = viewport.height;
         pdfCanvas.width = viewport.width;
 
@@ -380,25 +395,27 @@ async function displayPdfPage(pdfPath, pageNum) {
             canvasContext: canvasContext,
             viewport: viewport
         };
-        pdfRenderTask = page.render(renderContext);
-        await pdfRenderTask.promise;
 
+        // ★描画タスクを新しい変数に格納し、描画完了を待つ★
+        pdfRenderTask = page.render(renderContext); // タスクを格納
+        await pdfRenderTask.promise; // 描画完了を待つ
+
+        // 描画が正常に完了したらタスクをクリアする
         pdfRenderTask = null;
 
-        // PDFが表示されたらhiddenクラスを削除
-        pdfCanvas.classList.remove('hidden');
+        pdfCanvas.classList.remove('hidden'); // PDFが表示されたらhiddenクラスを削除
     } catch (error) {
+        // エラーがキャンセルによるものでないか確認 (RenderingCancelledException は正常なキャンセル)
         if (error.name === 'RenderingCancelledException') {
-            console.warn("前のPDF描画がキャンセルされました。");
-            return;
+            console.warn("前のPDF描画がキャンセルされました（正常）。");
+            pdfRenderTask = null; // キャンセルされたらタスクをクリア
+            return; // キャンセルによるエラーなので処理を中断
         }
 
         console.error("PDFの読み込みまたは描画中にエラーが発生しました:", error);
-        //　エラーが発生した場合、canvasを非表示にする
-        pdfCanvas.classList.add('hidden');
-        //　必要に応じて、ユーザーにエラーねっセージを表示するなどの処理
-        alert("PDFの表示中にエラーが発生しました。コンソールを確認してください。");
-        pdfRenderTask = null;
+        pdfCanvas.classList.add('hidden'); // エラーが発生した場合、canvasを非表示にする
+        alert("PDFの表示中にエラーが発生しました。コンソールを確認してください。ファイルパスやページ番号が正しいか、またはPDFファイルが破損していないか確認してください。");
+        pdfRenderTask = null; // エラー時もタスクをクリア
     }
 }
 
